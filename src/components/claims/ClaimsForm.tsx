@@ -130,26 +130,62 @@ export function ClaimsForm() {
     }
 
     setIsSubmitting(true);
-    
-    // Simulate submission
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    // Generate PDF
     const today = new Date();
-    generateClaimPDF({
-      claimNumber,
-      date: format(today, "dd 'de' MMMM 'de' yyyy", { locale: es }),
-      consumer: formData.consumer,
-      product: formData.product,
-      claim: formData.claim,
-    });
+    const dateFormatted = format(today, "dd 'de' MMMM 'de' yyyy", { locale: es });
     
-    toast({
-      title: "¡Reclamo enviado exitosamente!",
-      description: `Su reclamo N° ${claimNumber} ha sido registrado. Se ha descargado el comprobante en PDF.`,
-    });
-    
-    setIsSubmitting(false);
+    try {
+      // Send data to Google Sheets
+      const sheetData = {
+        claimNumber,
+        date: dateFormatted,
+        fullName: formData.consumer.fullName,
+        address: formData.consumer.address,
+        documentNumber: formData.consumer.documentNumber,
+        phone: formData.consumer.phone,
+        email: formData.consumer.email,
+        isMinor: formData.consumer.isMinor ? "Sí" : "No",
+        parentName: formData.consumer.parentName || "",
+        productType: formData.product.type === "product" ? "Producto" : "Servicio",
+        amount: formData.product.amount,
+        productDescription: formData.product.description,
+        claimType: formData.claim.claimType === "reclamo" ? "Reclamo" : "Queja",
+        facts: formData.claim.facts,
+        request: formData.claim.request,
+      };
+
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbwIlg618xeK9thFrBenNqXdXT2UQBK32anY5_mB7qTGMd8dLS-hIKnGVqH47z6MS-kPPg/exec",
+        {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sheetData),
+        }
+      );
+
+      // Generate PDF
+      generateClaimPDF({
+        claimNumber,
+        date: dateFormatted,
+        consumer: formData.consumer,
+        product: formData.product,
+        claim: formData.claim,
+      });
+
+      toast({
+        title: "¡Reclamo enviado exitosamente!",
+        description: `Su reclamo N° ${claimNumber} ha sido registrado y guardado. Se ha descargado el comprobante en PDF.`,
+      });
+    } catch (error) {
+      console.error("Error al enviar:", error);
+      toast({
+        title: "Error",
+        description: "Hubo un problema al enviar el reclamo. Intente nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const hasErrors = Object.keys(errors).length > 0;
