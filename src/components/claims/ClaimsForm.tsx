@@ -1,4 +1,6 @@
 import { useState, useMemo } from "react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { ClaimHeader } from "./ClaimHeader";
 import { ConsumerSection } from "./ConsumerSection";
 import { ProductServiceSection } from "./ProductServiceSection";
@@ -6,6 +8,7 @@ import { ClaimDetailsSection } from "./ClaimDetailsSection";
 import { AdminSection } from "./AdminSection";
 import { LegalFooter } from "./LegalFooter";
 import { toast } from "@/hooks/use-toast";
+import { generateClaimPDF } from "@/lib/generateClaimPDF";
 
 interface FormData {
   consumer: {
@@ -131,9 +134,19 @@ export function ClaimsForm() {
     // Simulate submission
     await new Promise((resolve) => setTimeout(resolve, 2000));
     
+    // Generate PDF
+    const today = new Date();
+    generateClaimPDF({
+      claimNumber,
+      date: format(today, "dd 'de' MMMM 'de' yyyy", { locale: es }),
+      consumer: formData.consumer,
+      product: formData.product,
+      claim: formData.claim,
+    });
+    
     toast({
       title: "¡Reclamo enviado exitosamente!",
-      description: `Su reclamo N° ${claimNumber} ha sido registrado. Recibirá una respuesta en un plazo máximo de 15 días hábiles.`,
+      description: `Su reclamo N° ${claimNumber} ha sido registrado. Se ha descargado el comprobante en PDF.`,
     });
     
     setIsSubmitting(false);
