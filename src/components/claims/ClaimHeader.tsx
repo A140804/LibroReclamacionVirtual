@@ -1,24 +1,32 @@
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import logoImage from "@/assets/logo-pizza-nostra.png";
 
 interface ClaimHeaderProps {
   claimNumber: string;
   companyName?: string;
 }
 
-export function ClaimHeader({ claimNumber, companyName = "EMPRESA S.A.C." }: ClaimHeaderProps) {
+export function ClaimHeader({ claimNumber, companyName = "PIZZA NOSTRA S.A.C." }: ClaimHeaderProps) {
   const today = new Date();
   
   return (
     <div className="border-2 border-border bg-card p-6 rounded-lg shadow-sm">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
-            LIBRO DE RECLAMACIONES
-          </h1>
-          <p className="text-lg font-semibold text-foreground mt-1">
-            HOJA DE RECLAMACIÓN
-          </p>
+        <div className="flex items-center gap-4 flex-1">
+          <img 
+            src={logoImage} 
+            alt="Pizza Nostra Logo" 
+            className="h-16 w-16 object-contain rounded-md"
+          />
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
+              LIBRO DE RECLAMACIONES
+            </h1>
+            <p className="text-lg font-semibold text-foreground mt-1">
+              HOJA DE RECLAMACIÓN
+            </p>
+          </div>
         </div>
         
         <div className="flex flex-col items-start md:items-end gap-2 text-sm">
