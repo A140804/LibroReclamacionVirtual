@@ -136,21 +136,19 @@ export function ClaimsForm() {
     try {
       // Send data to Google Sheets
       const sheetData = {
-        claimNumber,
-        date: dateFormatted,
-        fullName: formData.consumer.fullName,
-        address: formData.consumer.address,
-        documentNumber: formData.consumer.documentNumber,
-        phone: formData.consumer.phone,
-        email: formData.consumer.email,
-        isMinor: formData.consumer.isMinor ? "Sí" : "No",
-        parentName: formData.consumer.parentName || "",
-        productType: formData.product.type === "product" ? "Producto" : "Servicio",
-        amount: formData.product.amount,
-        productDescription: formData.product.description,
-        claimType: formData.claim.claimType === "reclamo" ? "Reclamo" : "Queja",
-        facts: formData.claim.facts,
-        request: formData.claim.request,
+        "Fecha": dateFormatted,
+        "Nombre Completo": formData.consumer.fullName,
+        "DNI / RUC": formData.consumer.documentNumber,
+        "Domicilio": formData.consumer.address,
+        "Teléfono / Email": `${formData.consumer.phone} / ${formData.consumer.email}`,
+        "Tipo Bien": `${formData.product.type === "product" ? "Producto" : "Servicio"} - ${formData.product.description}`,
+        "Monto (S/)": formData.product.amount,
+        "Tipo (Reclamo/Queja)": formData.claim.claimType === "reclamo" ? "Reclamo" : "Queja",
+        "Detalle del Reclamo": formData.claim.facts,
+        "Pedido del Cliente": formData.claim.request,
+        "Firma (Link/Base64)": "",
+        "Estado (Interno)": "Pendiente",
+        "Respuesta (Interno)": "",
       };
 
       await fetch(
